@@ -18,6 +18,7 @@
 
             var settings = {
                 enabled: $('#wcm_dec31_enabled').is(':checked') ? 1 : 0,
+                membership_product_ids: $('#wcm_dec31_membership_product_ids').val() || '',
                 excluded_plans: $('#wcm_dec31_excluded_plans').val() || []
             };
 

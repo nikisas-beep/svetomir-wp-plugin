@@ -74,6 +74,37 @@ class WCM_Dec31_Settings {
         $sanitized = array();
 
         $sanitized['enabled'] = isset( $input['enabled'] ) ? 1 : 0;
+        $sanitized['membership_product_ids'] = array();
+
+        // Preferred new field: comma-separated product IDs.
+        if ( isset( $input['membership_product_ids'] ) ) {
+            $raw_ids = is_array( $input['membership_product_ids'] )
+                ? implode( ',', $input['membership_product_ids'] )
+                : (string) $input['membership_product_ids'];
+
+            $parts = preg_split( '/[\s,]+/', $raw_ids );
+            if ( is_array( $parts ) ) {
+                foreach ( $parts as $part ) {
+                    if ( '' === trim( $part ) ) {
+                        continue;
+                    }
+                    $id = absint( $part );
+                    if ( $id > 0 ) {
+                        $sanitized['membership_product_ids'][] = $id;
+                    }
+                }
+            }
+        }
+
+        // Backward compatibility with old single-ID field.
+        if ( empty( $sanitized['membership_product_ids'] ) && ! empty( $input['membership_product_id'] ) ) {
+            $legacy_id = absint( $input['membership_product_id'] );
+            if ( $legacy_id > 0 ) {
+                $sanitized['membership_product_ids'][] = $legacy_id;
+            }
+        }
+        $sanitized['membership_product_ids'] = array_values( array_unique( $sanitized['membership_product_ids'] ) );
+
         $sanitized['excluded_plans'] = isset( $input['excluded_plans'] ) && is_array( $input['excluded_plans'] )
             ? array_map( 'intval', $input['excluded_plans'] )
             : array();
@@ -147,9 +178,31 @@ class WCM_Dec31_Settings {
         }
 
         $settings = get_option( 'wcm_dec31_settings', array(
-            'enabled'        => 1,
-            'excluded_plans' => array(),
+            'enabled'              => 1,
+            'membership_product_ids' => array(),
+            'excluded_plans'       => array(),
         ) );
+
+        // Backward compatibility on load: migrate legacy single ID into array in memory.
+        if ( empty( $settings['membership_product_ids'] ) && ! empty( $settings['membership_product_id'] ) ) {
+            $legacy_id = absint( $settings['membership_product_id'] );
+            if ( $legacy_id > 0 ) {
+                $settings['membership_product_ids'] = array( $legacy_id );
+            }
+        }
+
+        $membership_product_ids = isset( $settings['membership_product_ids'] ) && is_array( $settings['membership_product_ids'] )
+            ? array_values( array_filter( array_map( 'absint', $settings['membership_product_ids'] ) ) )
+            : array();
+
+        // If still empty, try loading legacy value directly from stored option.
+        if ( empty( $membership_product_ids ) && ! empty( $settings['membership_product_id'] ) ) {
+            $legacy_id = absint( $settings['membership_product_id'] );
+            if ( $legacy_id > 0 ) {
+                $membership_product_ids = array( $legacy_id );
+            }
+        }
+        $membership_product_ids_csv = implode( ',', $membership_product_ids );
 
         // Get all membership plans
         $plans = $this->get_membership_plans();
@@ -180,6 +233,27 @@ class WCM_Dec31_Settings {
                                 <input type="checkbox" id="wcm_dec31_enabled" name="wcm_dec31_settings[enabled]" value="1" <?php checked( ! empty( $settings['enabled'] ) ); ?>>
                                 <?php esc_html_e( 'Force all new memberships to expire on December 31 of the current calendar year', 'wcm-dec31' ); ?>
                             </label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="wcm_dec31_membership_product_ids">
+                                <?php esc_html_e( 'Membership Product IDs', 'wcm-dec31' ); ?>
+                            </label>
+                        </th>
+                        <td>
+                            <input
+                                type="text"
+                                id="wcm_dec31_membership_product_ids"
+                                name="wcm_dec31_settings[membership_product_ids]"
+                                value="<?php echo esc_attr( $membership_product_ids_csv ); ?>"
+                                class="regular-text"
+                                placeholder="123,456,789"
+                            >
+                            <p class="description">
+                                <?php esc_html_e( 'Comma-separated WooCommerce Product IDs for paid membership fee products. Example: 123,456,789', 'wcm-dec31' ); ?>
+                            </p>
                         </td>
                     </tr>
 
