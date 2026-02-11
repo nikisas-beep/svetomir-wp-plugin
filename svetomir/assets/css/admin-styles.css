@@ -1,0 +1,118 @@
+/**
+ * Admin Styles for WC Memberships - Expire on Dec 31
+ */
+
+.wcm-dec31-settings {
+    max-width: 900px;
+}
+
+.wcm-dec31-info-panel {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.wcm-dec31-info-panel h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.wcm-dec31-info-panel .info-content {
+    margin-top: 15px;
+}
+
+.wcm-dec31-info-panel .info-content ul {
+    margin-left: 20px;
+}
+
+.wcm-dec31-info-panel .info-content li {
+    margin-bottom: 8px;
+}
+
+.wcm-dec31-realignment-tool {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.wcm-dec31-realignment-tool h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+#wcm-dec31-realign-progress {
+    margin-top: 15px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 25px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #2271b1;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    margin: 0;
+    font-weight: 600;
+    color: #2271b1;
+}
+
+#wcm-dec31-messages {
+    margin-top: 15px;
+}
+
+#wcm-dec31-messages .notice {
+    margin: 10px 0;
+    padding: 10px;
+}
+
+#wcm-dec31-messages .notice-success {
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+    color: #155724;
+}
+
+#wcm-dec31-messages .notice-error {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+    color: #721c24;
+}
+
+#wcm-dec31-affected-count {
+    font-weight: 600;
+    color: #2271b1;
+    font-size: 1.1em;
+}
+
+#wcm-dec31-realign-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.wcm-dec31-settings .form-table th {
+    width: 200px;
+}
+
+.wcm-dec31-settings .form-table td {
+    padding: 15px 10px;
+}
+
+.wcm-dec31-settings select[multiple] {
+    padding: 5px;
+}
+
