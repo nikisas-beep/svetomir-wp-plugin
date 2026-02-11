@@ -40,7 +40,11 @@ class WCM_Dec31_Expiration_Manager {
      * Constructor
      */
     private function __construct() {
-        add_filter( 'wc_memberships_membership_plan_expiration_date', array( $this, 'override_expiration_date' ), 10, 3 );
+        /**
+         * No automatic plan-expiration override.
+         * Expiration is set explicitly when membership is granted from purchase
+         * via wc_memberships_grant_membership_access_from_purchase.
+         */
     }
 
     /**
@@ -52,36 +56,8 @@ class WCM_Dec31_Expiration_Manager {
      * @return string Y-m-d H:i:s (WordPress local timezone)
      */
     public function override_expiration_date( $expiration_date, $user_membership, $plan ) {
-
-        // Check if plugin is enabled
-        $settings = get_option( 'wcm_dec31_settings', array() );
-        if ( empty( $settings['enabled'] ) ) {
-            return $expiration_date;
-        }
-
-        // Check if plan is excluded
-        if ( $this->is_plan_excluded( $plan ) ) {
-            return $expiration_date;
-        }
-
-        // Only apply to new memberships created after plugin activation
-        // Check if membership was created before plugin activation
-        $activation_time = get_option( 'wcm_dec31_activation_time' );
-        if ( $activation_time && is_object( $user_membership ) && method_exists( $user_membership, 'get_start_date' ) ) {
-            $start_date = $user_membership->get_start_date( 'timestamp' );
-            if ( $start_date && $start_date < $activation_time ) {
-                return $expiration_date;
-            }
-        }
-
-        // Get current calendar year
-        $tz = wp_timezone();
-        $current_year = (int) current_time( 'Y' );
-
-        // Create Dec 31, 23:59:59 for current year
-        $dec31_local = new DateTimeImmutable( sprintf( '%04d-12-31 23:59:59', $current_year ), $tz );
-
-        return $dec31_local->format( 'Y-m-d H:i:s' );
+        // No-op (kept only for backward compatibility).
+        return $expiration_date;
     }
 
     /**
